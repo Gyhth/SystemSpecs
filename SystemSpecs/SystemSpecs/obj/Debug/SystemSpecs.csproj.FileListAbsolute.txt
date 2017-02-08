@@ -1,0 +1,6 @@
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\bin\Debug\SystemSpecs.exe.config
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\bin\Debug\SystemSpecs.exe
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\bin\Debug\SystemSpecs.pdb
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\obj\Debug\SystemSpecs.csprojResolveAssemblyReference.cache
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\obj\Debug\SystemSpecs.exe
+C:\Users\Owner\Documents\GitHub\SystemSpecs\SystemSpecs\SystemSpecs\obj\Debug\SystemSpecs.pdb
