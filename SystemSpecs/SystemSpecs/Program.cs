@@ -1,44 +1,69 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Management;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace SystemSpecs
 {
     class Program
     {
+        private static FileStream output;
         static void Main(string[] args)
         {
             String path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Specs.txt";
             if (File.Exists(path)) {
                 File.Delete(path);
             }
-            FileStream output = File.Open(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
-            writetoFile(output, "User Information");
-            writetoFile(output, "----------------");
-            writetoFile(output, "Username: " + Environment.UserName);
-            writetoFile(output, "User Domain: " + Environment.UserDomainName);
-            writetoFile(output, Environment.NewLine);
-            writetoFile(output, "OS Information");
-            writetoFile(output, "----------------");
+            output = File.Open(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+            outputHeader("User Information");
+            writetoFile("Username: " + Environment.UserName);
+            writetoFile("User Domain: " + Environment.UserDomainName);
+            writetoFile(Environment.NewLine);
+            outputHeader("OS Information");
             OperatingSystem os = Environment.OSVersion;
-            writetoFile(output, "Version: " + os.Version.ToString());
-            writetoFile(output, "Service Pack: " + os.ServicePack);
-            writetoFile(output, "Platform: " + os.Platform);
-            writetoFile(output, "64-Bit: " + Environment.Is64BitOperatingSystem);
-            writetoFile(output, Environment.NewLine);
-            writetoFile(output, "Hardware Information");
-            writetoFile(output, "----------------");
-
+            writetoFile("Version: " + os.Version.ToString());
+            writetoFile("Service Pack: " + os.ServicePack);
+            writetoFile("Platform: " + os.Platform);
+            writetoFile("64-Bit: " + Environment.Is64BitOperatingSystem);
+            writetoFile(Environment.NewLine);
+            outputHeader("Network Information");
+            try
+            {
+                String ip = getIPAddress();
+                writetoFile("IP:" + ip);
+            }
+            catch (Exception noAddress)
+            {
+                writetoFile("IP: Unable to obtain IP:" + noAddress.Message);
+            }           
         }
 
-        static void writetoFile(FileStream outputFile, String text)
+        private static void writetoFile(String text)
         {
             Byte[] info = new UTF8Encoding().GetBytes(text + Environment.NewLine);
-            outputFile.Write(info, 0, info.Length);
+            output.Write(info, 0, info.Length);
         }
+
+        private static void outputHeader(String title)
+        {
+            writetoFile(title);
+            writetoFile("----------------");
+
+        }
+
+        private static String getIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No IP Found");
+        }
+
     }
 }
