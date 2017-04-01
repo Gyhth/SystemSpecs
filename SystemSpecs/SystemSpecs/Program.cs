@@ -3,6 +3,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections;
 
 namespace SystemSpecs
 {
@@ -28,15 +29,18 @@ namespace SystemSpecs
             writetoFile("64-Bit: " + Environment.Is64BitOperatingSystem);
             writetoFile(Environment.NewLine);
             outputHeader("Network Information");
-            try
+            ArrayList ips = getIPAddresses();
+            if (ips.Count > 0)
             {
-                String ip = getIPAddress();
-                writetoFile("IP:" + ip);
+                foreach (String ip in ips) {
+                    writetoFile("IP:" + ip);
+                }
             }
-            catch (Exception noAddress)
+            else
             {
-                writetoFile("IP: Unable to obtain IP:" + noAddress.Message);
-            }           
+                writetoFile("No IPs found.");
+            }
+        
         }
 
         private static void writetoFile(String text)
@@ -52,17 +56,18 @@ namespace SystemSpecs
 
         }
 
-        private static String getIPAddress()
+        private static ArrayList getIPAddresses()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            ArrayList ips = new ArrayList();
             foreach (var ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    return ip.ToString();
+                     ips.Add(ip.ToString());
                 }
             }
-            throw new Exception("No IP Found");
+            return ips;
         }
 
     }
