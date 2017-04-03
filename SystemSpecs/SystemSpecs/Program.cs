@@ -4,6 +4,8 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace SystemSpecs
 {
@@ -13,10 +15,13 @@ namespace SystemSpecs
         static void Main(string[] args)
         {
             String path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\Specs.txt";
-            if (File.Exists(path)) {
+            if (File.Exists(path))
+            {
                 File.Delete(path);
             }
             output = File.Open(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+            ArrayList ips = getIPAddresses();
+            scanSubnet(ips);
             outputHeader("User Information");
             writetoFile("Username: " + Environment.UserName);
             writetoFile("User Domain: " + Environment.UserDomainName);
@@ -28,11 +33,11 @@ namespace SystemSpecs
             writetoFile("Platform: " + os.Platform);
             writetoFile("64-Bit: " + Environment.Is64BitOperatingSystem);
             writetoFile(Environment.NewLine);
-            outputHeader("Network Information");
-            ArrayList ips = getIPAddresses();
+            outputHeader("Network Information");            
             if (ips.Count > 0)
             {
-                foreach (String ip in ips) {
+                foreach (String ip in ips)
+                {
                     writetoFile("IP:" + ip);
                 }
             }
@@ -40,8 +45,7 @@ namespace SystemSpecs
             {
                 writetoFile("No IPs found.");
             }
-        
-        }
+       }
 
         private static void writetoFile(String text)
         {
@@ -70,5 +74,20 @@ namespace SystemSpecs
             return ips;
         }
 
+        private static async void scanSubnet(ArrayList ips)
+        {
+            Pinger pinger = new Pinger();
+            foreach (String ip in ips)
+            {
+                List<PingReply> results = await pinger.pingSubnet(ip);
+                foreach (PingReply result in results)
+                {
+                    if (result.Status == IPStatus.Success)
+                    {
+                        writetoFile("Pingable: " + result.Address);
+                    }
+                }
+            }
+        }
     }
 }
